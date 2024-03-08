@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useRef, useState } from "react";
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage'
 import { app } from "../firebase";
-import { updateUserStart, updateUserSuccess, updateUserFailure } from "../redux/user/userSlice";
+import { updateUserStart, updateUserSuccess, updateUserFailure, deleteUserFailure, deleteUserStart, deleteUserSuccess } from "../redux/user/userSlice";
 
 const Profile = () => {
     const { currentUser } = useSelector(state => state.user);
@@ -62,18 +62,29 @@ const Profile = () => {
 
             const res = await axios.post(`/api/user/update/${currentUser.data._id}`, formData);
 
-            if(res.status !== 200) {
-                dispatch(updateUserFailure(res.data.message));
-                return;
-            }
+            // if(res.status !== 200) {
+            //     dispatch(updateUserFailure(res.data.message));
+            //     return;
+            // }
 
             dispatch(updateUserSuccess())
             setUpdateSuccess(true);
 
-            navigate('/')
             
         } catch (error) {
             dispatch(updateUserFailure(error.response.data.message))
+        }
+    }
+
+    const handleDeleteUser = async() => {
+        try {
+            dispatch(deleteUserStart());
+            const res = await axios.delete(`/api/user/delete/${currentUser.data._id}`)
+        
+            dispatch(deleteUserSuccess())
+
+        } catch (error) {
+            dispatch(deleteUserFailure(error.response.data.message))
         }
     }
 
@@ -130,7 +141,7 @@ const Profile = () => {
                 </button>
             </form>
             <div className="flex justify-between mt-5">
-                <span className="text-red-700 cursor-pointer ">Delete Account</span>
+                <span onClick={handleDeleteUser} className="text-red-700 cursor-pointer ">Delete Account</span>
                 <span className="text-red-700 cursor-pointer ">Sign Out</span>
             </div>
             <p className="text-red-700 mt-5">{error ? error : ''}</p>
