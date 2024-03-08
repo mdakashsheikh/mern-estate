@@ -69,7 +69,7 @@ const Profile = () => {
 
             dispatch(updateUserSuccess())
             setUpdateSuccess(true);
-            console.log('Hiiiiiiiiiiiiiiiiiiiiiiiiiiii')
+
             navigate('/')
             
         } catch (error) {
